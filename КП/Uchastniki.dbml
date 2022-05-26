@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="pleshkova" Class="UchastnikiDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=wsr;Initial Catalog=pleshkova;User ID=pleshkova" SettingsObjectName="КП.Properties.Settings" SettingsPropertyName="DbConnect" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Uchastniky" Member="Uchastniky">
+    <Type Name="Uchastniky">
+      <Column Name="[ID участника]" Member="ID_участника" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ФИО" Type="System.String" DbType="VarChar(70)" CanBeNull="true" />
+      <Column Name="[Дата рождения]" Member="Дата_рождения" AutoSync="Never" Type="System.DateTime" DbType="Date" IsDbGenerated="true" CanBeNull="true" />
+      <Column Name="Телефон" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Адрес" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Руководитель" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

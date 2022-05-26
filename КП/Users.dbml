@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="pleshkova" Class="UsersDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=wsr;Initial Catalog=pleshkova;User ID=pleshkova" SettingsObjectName="КП.Properties.Settings" SettingsPropertyName="DbConnect" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.[User]" Member="User">
+    <Type Name="User">
+      <Column Name="[ID пользователя]" Member="ID_пользователя" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ФИО" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Логин" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Пароль" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

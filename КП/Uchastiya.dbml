@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="pleshkova" Class="UchastiyaDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=wsr;Initial Catalog=pleshkova;User ID=pleshkova" SettingsObjectName="КП.Properties.Settings" SettingsPropertyName="DbConnect" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Uchastie" Member="Uchastie">
+    <Type Name="Uchastie">
+      <Column Name="[ID участия]" Member="ID_участия" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Участник" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Соревнование" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Баллы" Type="System.Single" DbType="Real" CanBeNull="true" />
+      <Column Name="Место" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

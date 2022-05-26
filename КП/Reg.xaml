@@ -1,0 +1,111 @@
+﻿<Window x:Class="КП.Reg"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:КП"
+        mc:Ignorable="d"
+        Title="Регистрация" Height="450" Width="350" WindowStartupLocation="CenterScreen" FontFamily="Comic Sans MS" FontSize="20" ResizeMode="NoResize" WindowStyle="ToolWindow" BorderBrush="#FF1B0DA6" BorderThickness="2">
+    <Window.Resources>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#331B0DA6"/>
+            <Setter Property="BorderBrush" Value="#FF1B0DA6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Width" Value="230"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            SnapsToDevicePixels="true" 
+                            CornerRadius="10">
+                            <ContentPresenter Focusable="False" 
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                          Margin="{TemplateBinding Padding}" 
+                                          RecognizesAccessKey="True" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="FontSize" Value="22"/>
+                                <Setter Property="Height" Value="40"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="BorderBrush" Value="#FF1B0DA6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            SnapsToDevicePixels="True"
+                            CornerRadius="7">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.5"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderThickness" Value="3"/>
+                                <Setter Property="Height" Value="40"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+
+    <Grid Margin="30,10" >
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="0.8*"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Регистрация"/>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="ФИО"/>
+            <TextBox x:Name="txtFIOReg"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2">
+            <TextBlock Text="Логин"/>
+            <TextBox x:Name="txtLoginReg"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3">
+            <TextBlock Text="Пароль"/>
+            <TextBox x:Name="txtPasswordReg"/>
+        </StackPanel>
+
+        <Button Grid.Row="6" Content="Зарегистрировать" x:Name="btnRegReg" Click="BtnRegReg_Click"/>
+        <Button Grid.Row="5" Content="Отмена" x:Name="btnRegOtm" Click="BtnRegOtm_Click" Width="150"/>
+    </Grid>
+</Window>
