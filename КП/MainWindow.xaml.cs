@@ -29,11 +29,6 @@ namespace КП
         {
             try
             {
-                try
-                { 
-                UsersDataContext dc = new UsersDataContext(Properties.Settings.Default.DbConnect);
-                }
-                catch { MessageBox.Show("Ошибка соединения"); }
                 UsersDataContext db = new UsersDataContext(Properties.Settings.Default.DbConnect);
                 var userLogin = (from users in db.User where users.Логин == txtLogin.Text select users).ToArray();
                 var userPass = (from users in db.User where users.Пароль == txtPassword.Password select users).ToArray();
@@ -43,10 +38,11 @@ namespace КП
                     olimp.Show();
                     this.Close();
                 }
+                else MessageBox.Show("Введите корректные");
             }
             catch
             {
-                MessageBox.Show("Введите корреткные данные");
+                MessageBox.Show("Ошибка соединения");
             }
 
         }
