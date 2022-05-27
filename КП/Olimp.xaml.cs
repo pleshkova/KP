@@ -19,6 +19,7 @@ using System.Data.Linq.Mapping;
 using Microsoft.Office.Interop.Excel;
 using Window = System.Windows.Window;
 using System.Text.RegularExpressions;
+using System.Data.Linq.SqlClient;
 
 namespace КП
 {
@@ -141,16 +142,21 @@ namespace КП
         {
             try
             {
-                UchastnikiDataContext db = new UchastnikiDataContext();
-                Uchastniky uchastnik = new Uchastniky();
-                uchastnik.ФИО = txtFIO.Text;
-                uchastnik.Телефон = txtPhone.Text;
-                uchastnik.Дата_рождения = Convert.ToDateTime(DateBith.Text);
-                uchastnik.Адрес = txtAdress.Text;
-                uchastnik.Руководитель = txtRukvod.Text;
-                db.GetTable<Uchastniky>().InsertOnSubmit(uchastnik);
-                db.SubmitChanges();
-                Update();
+                if (txtFIO.Text.Length>0&& txtPhone.Text.Length>0 && DateBith.Text.Length>0 && txtAdress.Text.Length>0 && txtRukvod.Text.Length>0)
+                {
+                    UchastnikiDataContext db = new UchastnikiDataContext();
+                    Uchastniky uchastnik = new Uchastniky();
+                    uchastnik.ФИО = txtFIO.Text;
+                    uchastnik.Телефон = txtPhone.Text;
+                    uchastnik.Дата_рождения = Convert.ToDateTime(DateBith.Text);
+                    uchastnik.Адрес = txtAdress.Text;
+                    uchastnik.Руководитель = txtRukvod.Text;
+                    db.GetTable<Uchastniky>().InsertOnSubmit(uchastnik);
+                    db.SubmitChanges();
+                    Update();
+
+                    MessageBox.Show("Добавлены новые данные");
+                }
             }
             catch { MessageBox.Show("Ошибка соединения"); }
             txtFIO.IsEnabled = false;
@@ -214,6 +220,26 @@ namespace КП
                 db.Uchastniky.DeleteOnSubmit(uch);
                 db.SubmitChanges();
                 Update();
+                MessageBox.Show("Данные удалены");
+            }
+            catch { MessageBox.Show("Ошибка соединения"); }
+        }
+
+        private void TxtPoisk_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                {
+                    UchastnikiDataContext dc1 = new UchastnikiDataContext();
+                    if (txtPoisk.Text.Length > 0)
+                    {
+                        var uch = (from a in dc1.Uchastniky where SqlMethods.Like(a.ФИО, txtPoisk.Text + "%") select a).ToArray();
+                        Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
+                        bdUchastnik.ItemsSource = uch;
+                    }
+                    else Update();
+                }
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
@@ -283,6 +309,8 @@ namespace КП
                 db.GetTable<Sorevnovaniya>().InsertOnSubmit(sorev);
                 db.SubmitChanges();
                 Update();
+
+                MessageBox.Show("Добавлены новые данные");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
 
@@ -339,13 +367,10 @@ namespace КП
                 db.Sorevnovaniya.DeleteOnSubmit(uch);
                 db.SubmitChanges();
                 Update();
+
+                MessageBox.Show("Данные удалены");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
-        }
-
-        private void TxtNum_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
         }
 
 
@@ -385,6 +410,8 @@ namespace КП
                 db.Uchastie.DeleteOnSubmit(uch);
                 db.SubmitChanges();
                 Update();
+
+                MessageBox.Show("Данные удалены");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
@@ -395,10 +422,13 @@ namespace КП
             cmbSorev.IsEnabled = true;
             txtBall.IsEnabled = true;
             btnOKUchastNew.IsEnabled = true;
+            btnCanselUchast.IsEnabled = true;
         }
 
         private void BtnCanselUchast_Click(object sender, RoutedEventArgs e)
         {
+            cmbFIO.SelectedValue="";
+            cmbSorev.SelectedValue = "";
             cmbSorev.IsEnabled = false;
             cmbFIO.IsEnabled = false;
             txtBall.Clear();
@@ -407,8 +437,8 @@ namespace КП
 
         private void BtnOKUchastNew_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            //try
+            //{
                 string newUch = Convert.ToString(cmbFIO.SelectedItem);
                 UchastnikiDataContext dc = new UchastnikiDataContext();
                 var uch = (from a in dc.Uchastniky
@@ -423,11 +453,14 @@ namespace КП
                 Uchastie uchastie = new Uchastie();
                 uchastie.Участник = uch[0].ID_участника;
                 uchastie.Соревнование = sor[0].ID_соревнования;
+                uchastie.Баллы=Convert.ToInt32(txtBall.Text);
                 dc2.GetTable<Uchastie>().InsertOnSubmit(uchastie);
                 dc2.SubmitChanges();
                 Update();
-            }
-            catch { MessageBox.Show("Ошибка соединения"); }
+
+                MessageBox.Show("Добавлены новые данные");
+            //}
+            //catch { MessageBox.Show("Ошибка соединения"); }
 
             txtNazv.IsEnabled = false;
             txtNum.IsEnabled = false;
@@ -441,15 +474,7 @@ namespace КП
         }
 
 
-        private void TxtFIO_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            //string Symbol = e.KeyChar.ToString();
-            //if (!Regex.Match(Symbol, @"[а-яА-Я]|[a-zA-Z]").Success)
-            //{
-            //    e.Handled = true;
-            //}
-        }
-
+      
 
         //Вкладка Запросы
         private void BtnOk1Zapr_Click(object sender, RoutedEventArgs e)
@@ -458,14 +483,13 @@ namespace КП
             {
                 using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
                 {
-                    string date = DateZapr.Text;
                     Table<Uchastie> uchasties = db.GetTable<Uchastie>();
                     Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
                     Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
                     var query = from a in uchasties
                                 join b in uchastnikies on a.Участник equals b.ID_участника
                                 join c in sorevnovaniyas on a.Соревнование equals c.ID_соревнования
-                                where c.Дата_проведения == Convert.ToDateTime(date)
+                                where c.Дата_проведения == Convert.ToDateTime(DateZapr.Text)
                                 select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения };
                     dbZapros.ItemsSource = query;
                 }
@@ -479,10 +503,9 @@ namespace КП
             {
                 using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
                 {
-                    string sorSelected = Convert.ToString(cmbZapSor.SelectedItem);
                     SorevnovaniyaDataContext dc = new SorevnovaniyaDataContext();
                     var sor = (from a in dc.Sorevnovaniya
-                               where a.Название == sorSelected
+                               where a.Название == Convert.ToString(cmbZapSor.SelectedItem)
                                select a).ToArray();
                     Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
                     Table<Uchastie> uchasties = db.GetTable<Uchastie>();
@@ -504,10 +527,9 @@ namespace КП
             {
                 using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
                 {
-                    string uchSel = Convert.ToString(cmbZapUch.SelectedItem);
                     UchastnikiDataContext dc1 = new UchastnikiDataContext();
                     var uch = (from a in dc1.Uchastniky
-                               where a.ФИО == uchSel
+                               where a.ФИО == Convert.ToString(cmbZapUch.SelectedItem)
                                select a).ToArray();
                     Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
                     Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
@@ -551,6 +573,32 @@ namespace КП
                 range.Value2 = dbZapros.Columns[i].Header;
                 
             }
+        }
+
+
+        
+        private void TxtNum_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
+        }
+
+        private void TxtPhone_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
+        }
+
+        private void TxtFIO_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if ((e.Text[0] < 'А' || e.Text[0] > 'Я' && e.Text[0] < 'а' || e.Text[0] > 'я') && e.Text[0] != '-' && e.Text[0] != '.')
+                e.Handled = true;
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            txtPoisk.Clear();
+            BtnCanselSor_Click(null, null);
+            BtnCanselUchast_Click(null, null);
+            BtnCanselUch_Click(null, null);
         }
     }
 }

@@ -32,18 +32,19 @@ namespace КП
                 UsersDataContext db = new UsersDataContext(Properties.Settings.Default.DbConnect);
                 var userLogin = (from users in db.User where users.Логин == txtLogin.Text select users).ToArray();
                 var userPass = (from users in db.User where users.Пароль == txtPassword.Password select users).ToArray();
-                if (txtLogin.Text == userLogin[0].Логин && txtPassword.Password == userPass[0].Пароль)
+                try
                 {
-                    Olimp olimp = new Olimp();
-                    olimp.Show();
-                    this.Close();
+                    if (txtLogin.Text == userLogin[0].Логин && txtPassword.Password == userPass[0].Пароль)
+                    {
+                        Olimp olimp = new Olimp();
+                        olimp.Show();
+                        this.Close();
+                    }
                 }
-                else MessageBox.Show("Введите корректные");
+                catch { MessageBox.Show("Введите корректные данные"); }
             }
-            catch
-            {
-                MessageBox.Show("Ошибка соединения");
-            }
+            catch { MessageBox.Show("Ошибка сединения"); }
+            
 
         }
 
