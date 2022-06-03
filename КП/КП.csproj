@@ -81,13 +81,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Reg.xaml.cs">
-      <DependentUpon>Reg.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Sorevnovaniya.designer.cs">
+    <Compile Include="Olimpiady.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Sorevnovaniya.dbml</DependentUpon>
+      <DependentUpon>Olimpiady.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Reg.xaml.cs">
+      <DependentUpon>Reg.xaml</DependentUpon>
     </Compile>
     <Compile Include="Uchastiya.designer.cs">
       <AutoGen>True</AutoGen>
@@ -157,6 +157,14 @@
     <None Include="DataSet.xss">
       <DependentUpon>DataSet.xsd</DependentUpon>
     </None>
+    <None Include="Olimpiady.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>Olimpiady.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Olimpiady.dbml.layout">
+      <DependentUpon>Olimpiady.dbml</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="Uchastiya.dbml.layout">
       <DependentUpon>Uchastiya.dbml</DependentUpon>
@@ -168,14 +176,6 @@
     </None>
     <None Include="Uchastniki.dbml.layout">
       <DependentUpon>Uchastniki.dbml</DependentUpon>
-    </None>
-    <None Include="Sorevnovaniya.dbml.layout">
-      <DependentUpon>Sorevnovaniya.dbml</DependentUpon>
-    </None>
-    <None Include="Sorevnovaniya.dbml">
-      <Generator>MSLinqToSQLGenerator</Generator>
-      <LastGenOutput>Sorevnovaniya.designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </None>
     <None Include="Uchastniki.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>

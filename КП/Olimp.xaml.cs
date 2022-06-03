@@ -46,21 +46,20 @@ namespace КП
                 {
                     Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
                     bdUchastnik.ItemsSource = uchastnikies;
-                    Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
-                    bdSorevnovanya.ItemsSource = sorevnovaniyas;
+                    Table<Olimpiadi> olimpiadis = db.GetTable<Olimpiadi>();
+                    bdOlimpiadi.ItemsSource = olimpiadis;
                     Table<Uchastie> uchasties = db.GetTable<Uchastie>();
+                    
+                    bdUchastiya.ItemsSource = from a in uchasties
+                                              join b in uchastnikies on a.Участник equals b.ID_участника
+                                              join c in olimpiadis on a.Олимпиада equals c.ID_олимпиады
+                                              select new { a.ID_участия, b.ФИО, c.Название, a.Баллы };
 
-                    var query = from a in uchasties
-                                join b in uchastnikies on a.Участник equals b.ID_участника
-                                join c in sorevnovaniyas on a.Соревнование equals c.ID_соревнования
-                                select new { a.ID_участия, b.ФИО, c.Название, a.Баллы, a.Место };
-                    bdUchastiya.ItemsSource = query;
-
-                    SorevnovaniyaDataContext dc = new SorevnovaniyaDataContext();
-                    var sor = (from a in dc.Sorevnovaniya
+                    OlimpiadyDataContext dc = new OlimpiadyDataContext();
+                    var sor = (from a in dc.Olimpiadi
                                select a.Название);
-                    cmbSorev.ItemsSource = sor;
-                    cmbZapSor.ItemsSource = sor;
+                    cmbOlimp.ItemsSource = sor;
+                    cmbZapOlimp.ItemsSource = sor;
 
                     UchastnikiDataContext dc1 = new UchastnikiDataContext();
                     var uch = (from a in dc1.Uchastniky
@@ -72,159 +71,183 @@ namespace КП
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tiUchastniki.IsSelected == false)
+            {
+                txtPoisk.Clear();
+                BtnCanselUch_Click(null, null);
+            }
+            if (tiOlimp.IsSelected == false) BtnCanselOlimp_Click(null, null);
+            if (tiUchastiya.IsSelected == false) BtnCanselUchast_Click(null, null);
+
+        }
+
 
         //Вкладка Участники
+        //Код для кнопки "Новый участник"
         private void BtnNewUchastnik_Click(object sender, RoutedEventArgs e)
         {
             txtFIO.IsEnabled = true;
-            txtAdress.IsEnabled = true;
+            txtUchZav.IsEnabled = true;
             DateBith.IsEnabled = true;
             txtPhone.IsEnabled = true;
-            txtRukvod.IsEnabled = true;
             btnCanselUch.IsEnabled = true;
             btnOKUchNew.Visibility = Visibility.Visible;
             btnOKUchRed.Visibility = Visibility.Hidden;
             btnOKUchNew.IsEnabled = true;
         }
 
+        //Код для кнопки "Редактировать"
         private void BtnRedUch_Click(object sender, RoutedEventArgs e)
         {
-            txtFIO.IsEnabled = true;
-            txtAdress.IsEnabled = true;
-            txtPhone.IsEnabled = true;
-            txtRukvod.IsEnabled = true;
-            btnCanselUch.IsEnabled = true;
-            btnOKUchNew.Visibility = Visibility.Hidden;
-            btnOKUchRed.Visibility = Visibility.Visible;
-            btnOKUchRed.IsEnabled = true;
-
             try
             {
-                UchastnikiDataContext db = new UchastnikiDataContext();
-                object item = bdUchastnik.SelectedItem;
-                long vb = Convert.ToInt64((bdUchastnik.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                txtFIO.Text = (from u in db.Uchastniky
-                               where u.ID_участника == vb
-                               select u.ФИО).FirstOrDefault();
-                txtAdress.Text = (from u in db.Uchastniky
-                                  where u.ID_участника == vb
-                                  select u.Адрес).FirstOrDefault();
-                txtPhone.Text = (from u in db.Uchastniky
-                                 where u.ID_участника == vb
-                                 select u.Телефон).FirstOrDefault();
-                txtRukvod.Text = (from u in db.Uchastniky
-                                  where u.ID_участника == vb
-                                  select u.Руководитель).FirstOrDefault();
-                DateBith.Text = Convert.ToString((from u in db.Uchastniky
-                                                  where u.ID_участника == vb
-                                                  select u.Дата_рождения).FirstOrDefault());
+                if (bdUchastnik.SelectedItem != null)
+                {
+                    UchastnikiDataContext db = new UchastnikiDataContext();
+                    txtFIO.IsEnabled = true;
+                    txtUchZav.IsEnabled = true;
+                    txtPhone.IsEnabled = true;
+                    btnCanselUch.IsEnabled = true;
+                    btnOKUchNew.Visibility = Visibility.Hidden;
+                    btnOKUchRed.Visibility = Visibility.Visible;
+                    btnOKUchRed.IsEnabled = true;
+                    object item = bdUchastnik.SelectedItem;
+                    long vb = Convert.ToInt64((bdUchastnik.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    txtFIO.Text = (from u in db.Uchastniky
+                                   where u.ID_участника == vb
+                                   select u.ФИО).FirstOrDefault();
+                    txtUchZav.Text = (from u in db.Uchastniky
+                                      where u.ID_участника == vb
+                                      select u.Учебное_заведение).FirstOrDefault();
+                    txtPhone.Text = (from u in db.Uchastniky
+                                     where u.ID_участника == vb
+                                     select u.Телефон).FirstOrDefault();
+                    DateBith.Text = Convert.ToString((from u in db.Uchastniky
+                                                      where u.ID_участника == vb
+                                                      select u.Дата_рождения).FirstOrDefault());
+                }
+                else MessageBox.Show("Запись не выбрана");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
+        //Код для кнопки отмена
         private void BtnCanselUch_Click(object sender, RoutedEventArgs e)
         {
             txtFIO.IsEnabled = false;
-            txtAdress.IsEnabled = false;
+            txtUchZav.IsEnabled = false;
             txtPhone.IsEnabled = false;
-            txtRukvod.IsEnabled = false;
             txtFIO.Clear();
-            txtAdress.Clear();
+            txtUchZav.Clear();
             DateBith.Text = "";
             txtPhone.Clear();
-            txtRukvod.Clear();
             btnCanselUch.IsEnabled = false;
+            DateBith.IsEnabled = false;
             btnOKUchNew.IsEnabled = false;
             btnOKUchRed.IsEnabled = false;
         }
 
+        //Код для сохранения новых данных
         private void BtnOKUchNew_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (txtFIO.Text.Length>0&& txtPhone.Text.Length>0 && DateBith.Text.Length>0 && txtAdress.Text.Length>0 && txtRukvod.Text.Length>0)
+                if (txtFIO.Text.Length>0 && txtPhone.Text.Length>0 && DateBith.Text.Length>0 && txtUchZav.Text.Length>0)
                 {
                     UchastnikiDataContext db = new UchastnikiDataContext();
                     Uchastniky uchastnik = new Uchastniky();
                     uchastnik.ФИО = txtFIO.Text;
                     uchastnik.Телефон = txtPhone.Text;
                     uchastnik.Дата_рождения = Convert.ToDateTime(DateBith.Text);
-                    uchastnik.Адрес = txtAdress.Text;
-                    uchastnik.Руководитель = txtRukvod.Text;
+                    uchastnik.Учебное_заведение = txtUchZav.Text;
                     db.GetTable<Uchastniky>().InsertOnSubmit(uchastnik);
                     db.SubmitChanges();
                     Update();
 
                     MessageBox.Show("Добавлены новые данные");
+                    txtFIO.IsEnabled = false;
+                    txtUchZav.IsEnabled = false;
+                    txtPhone.IsEnabled = false;
+                    txtFIO.Clear();
+                    txtUchZav.Clear();
+                    DateBith.Text = "";
+                    txtPhone.Clear();
+                    btnCanselUch.IsEnabled = false;
+                    btnOKUchNew.IsEnabled = false;
+                    btnOKUchRed.IsEnabled = false;
                 }
+                else MessageBox.Show("Заполните все поля");
             }
-            catch { MessageBox.Show("Ошибка соединения"); }
-            txtFIO.IsEnabled = false;
-            txtAdress.IsEnabled = false;
-            txtPhone.IsEnabled = false;
-            txtRukvod.IsEnabled = false;
-            txtFIO.Clear();
-            txtAdress.Clear();
-            DateBith.Text = "";
-            txtPhone.Clear();
-            txtRukvod.Clear();
-            btnCanselUch.IsEnabled = false;
-            btnOKUchNew.IsEnabled = false;
-            btnOKUchRed.IsEnabled = false;
+            catch { MessageBox.Show("Ошибка соединения"); }            
         }
 
+        //Код для сохранения отредактированных данных
         private void BtnOKUchRed_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                object item = bdUchastnik.SelectedItem;
-                long vb = Convert.ToInt64((bdUchastnik.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                UchastnikiDataContext db = new UchastnikiDataContext();
-                Uchastniky uch = db.Uchastniky.FirstOrDefault(uchid => uchid.ID_участника.Equals(vb));
-                uch.ФИО = txtFIO.Text;
-                uch.Адрес = txtAdress.Text;
-                uch.Телефон = txtPhone.Text;
-                uch.Руководитель = txtRukvod.Text;
-                uch.Дата_рождения = Convert.ToDateTime(DateBith.Text);
-                var SelectQuery =
-                    from a in db.GetTable<Uchastniky>()
-                    select a;
-                db.SubmitChanges();
-                bdUchastnik.ItemsSource = SelectQuery;
-                MessageBox.Show("Данные изменены");
+                if (txtFIO.Text.Length > 0 && txtPhone.Text.Length > 0 && DateBith.Text.Length > 0 && txtUchZav.Text.Length > 0)
+                {
+                    object item = bdUchastnik.SelectedItem;
+                    long vb = Convert.ToInt64((bdUchastnik.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    UchastnikiDataContext db = new UchastnikiDataContext();
+                    Uchastniky uch = db.Uchastniky.FirstOrDefault(uchid => uchid.ID_участника.Equals(vb));
+                    uch.ФИО = txtFIO.Text;
+                    uch.Учебное_заведение = txtUchZav.Text;
+                    uch.Телефон = txtPhone.Text;
+                    uch.Дата_рождения = Convert.ToDateTime(DateBith.Text);
+                    var SelectQuery =
+                        from a in db.GetTable<Uchastniky>()
+                        select a;
+                    db.SubmitChanges();
+                    bdUchastnik.ItemsSource = SelectQuery;
+                    MessageBox.Show("Данные изменены");
+
+                    txtFIO.IsEnabled = false;
+                    txtUchZav.IsEnabled = false;
+                    txtPhone.IsEnabled = false;
+                    txtFIO.Clear();
+                    txtUchZav.Clear();
+                    txtPhone.Clear();
+                    DateBith.Text = "";
+                    btnCanselUch.IsEnabled = false;
+                    btnOKUchNew.IsEnabled = false;
+                    btnOKUchRed.IsEnabled = false;
+                }
+                else MessageBox.Show("Заполните все поля");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
 
-            txtFIO.IsEnabled = false;
-            txtAdress.IsEnabled = false;
-            txtPhone.IsEnabled = false;
-            txtRukvod.IsEnabled = false;
-            txtFIO.Clear();
-            txtAdress.Clear();
-            txtPhone.Clear();
-            DateBith.Text = "";
-            txtRukvod.Clear();
-            btnCanselUch.IsEnabled = false;
-            btnOKUchNew.IsEnabled = false;
-            btnOKUchRed.IsEnabled = false;
         }
 
+         //Код для кнопки "Удалить"
         private void BtnDelUch_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                UchastnikiDataContext db = new UchastnikiDataContext();
-                object item = bdUchastnik.SelectedItem;
-                long vb = Convert.ToInt64((bdUchastnik.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                var uch = (from s in db.Uchastniky where s.ID_участника == vb select s).Single<Uchastniky>();
-                db.Uchastniky.DeleteOnSubmit(uch);
-                db.SubmitChanges();
-                Update();
-                MessageBox.Show("Данные удалены");
+                if (bdUchastnik.SelectedItem != null)
+                {
+                    UchastnikiDataContext db = new UchastnikiDataContext();
+                    object item = bdUchastnik.SelectedItem;
+                    long vb = Convert.ToInt64((bdUchastnik.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    var uch = (from s in db.Uchastniky where s.ID_участника == vb select s).Single<Uchastniky>();
+                    try
+                    {
+                        db.Uchastniky.DeleteOnSubmit(uch);
+                        db.SubmitChanges();
+                        Update();
+                        MessageBox.Show("Данные удалены");
+                    }
+                    catch { MessageBox.Show("Вы не можете удалить этого участника, т.к. он зарегистрирован в участии"); }
+                }
+                else MessageBox.Show("Запись не выбрана");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
+        //Код поиска участников по ФИО
         private void TxtPoisk_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -243,133 +266,150 @@ namespace КП
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
-
-
+        
         //Вкладка Соревнования
-        private void BtnNewSorev_Click(object sender, RoutedEventArgs e)
+        private void BtnNewOlimp_Click(object sender, RoutedEventArgs e)
         {
             txtNazv.IsEnabled = true;
-            txtNum.IsEnabled = true;
             dateProv.IsEnabled = true;
-            btnCanselSor.IsEnabled = true;
-            btnOKSorRed.Visibility = Visibility.Hidden;
-            btnOKSorNew.Visibility = Visibility.Visible;
-            btnOKSorNew.IsEnabled = true;
+            txtKolvo.IsEnabled = true;
+            btnCanselOlimp.IsEnabled = true;
+            btnOKOlimpRed.Visibility = Visibility.Hidden;
+            btnOKOlimpNew.Visibility = Visibility.Visible;
+            btnOKOlimpNew.IsEnabled = true;
         }
 
-        private void BtnRedSor_Click(object sender, RoutedEventArgs e)
+        private void BtnRedOlimp_Click(object sender, RoutedEventArgs e)
         {
-            txtNazv.IsEnabled = true;
-            txtNum.IsEnabled = true;
-            dateProv.IsEnabled = true;
-            btnCanselSor.IsEnabled = true;
-            btnOKSorNew.Visibility = Visibility.Hidden;
-            btnOKSorRed.Visibility = Visibility.Visible;
-            btnOKSorRed.IsEnabled = true;
+            
             try
             {
-                SorevnovaniyaDataContext db = new SorevnovaniyaDataContext();
-                object item = bdSorevnovanya.SelectedItem;
-                long vb = Convert.ToInt64((bdSorevnovanya.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                txtNazv.Text = (from u in db.Sorevnovaniya
-                                where u.ID_соревнования == vb
-                                select u.Название).FirstOrDefault();
-                txtNum.Text = Convert.ToString((from u in db.Sorevnovaniya
-                                                where u.ID_соревнования == vb
-                                                select u.Максимальное_количество_участников).FirstOrDefault());
-                dateProv.Text = Convert.ToString((from u in db.Sorevnovaniya
-                                                  where u.ID_соревнования == vb
-                                                  select u.Дата_проведения).FirstOrDefault());
+                if (bdOlimpiadi.SelectedItem != null)
+                {
+                    txtNazv.IsEnabled = true;
+                    txtKolvo.IsEnabled = true;
+                    dateProv.IsEnabled = true;
+                    btnCanselOlimp.IsEnabled = true;
+                    btnOKOlimpNew.Visibility = Visibility.Hidden;
+                    btnOKOlimpRed.Visibility = Visibility.Visible;
+                    btnOKOlimpRed.IsEnabled = true;
+                    OlimpiadyDataContext db = new OlimpiadyDataContext();
+                    object item = bdOlimpiadi.SelectedItem;
+                    long vb = Convert.ToInt64((bdOlimpiadi.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    txtNazv.Text = (from u in db.Olimpiadi
+                                    where u.ID_олимпиады == vb
+                                    select u.Название).FirstOrDefault();
+                    dateProv.Text = Convert.ToString((from u in db.Olimpiadi
+                                                      where u.ID_олимпиады == vb
+                                                      select u.Дата_проведения).FirstOrDefault());
+                    txtKolvo.Text = Convert.ToString((from u in db.Olimpiadi
+                                                      where u.ID_олимпиады == vb
+                                                      select u.Количество_заданий).FirstOrDefault());
+                }
+                else MessageBox.Show("Запись не выбрана");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
-        private void BtnCanselSor_Click(object sender, RoutedEventArgs e)
+        private void BtnCanselOlimp_Click(object sender, RoutedEventArgs e)
         {
             txtNazv.IsEnabled = false;
-            txtNum.IsEnabled = false;
             dateProv.IsEnabled = false;
+            txtKolvo.IsEnabled = false;
+            txtKolvo.Clear();
             txtNazv.Clear();
             dateProv.Text = "";
-            txtNum.Clear();
-            btnCanselSor.IsEnabled = false;
-            btnOKSorNew.IsEnabled = false;
-            btnOKSorRed.IsEnabled = false;
+            btnCanselOlimp.IsEnabled = false;
+            btnOKOlimpNew.IsEnabled = false;
+            btnOKOlimpRed.IsEnabled = false;
         }
 
-        private void BtnOKSorNew_Click(object sender, RoutedEventArgs e)
+        private void BtnOKOlimpNew_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                SorevnovaniyaDataContext db = new SorevnovaniyaDataContext();
-                Sorevnovaniya sorev = new Sorevnovaniya();
-                sorev.Название = txtNazv.Text;
-                sorev.Максимальное_количество_участников = Convert.ToInt32(txtNum.Text);
-                sorev.Дата_проведения = Convert.ToDateTime(dateProv.Text);
-                db.GetTable<Sorevnovaniya>().InsertOnSubmit(sorev);
-                db.SubmitChanges();
-                Update();
+                if (txtNazv.Text.Length>0 && dateProv.Text.Length>0 && txtKolvo.Text.Length>0)
+                {
+                    OlimpiadyDataContext db = new OlimpiadyDataContext();
+                    Olimpiadi olimp = new Olimpiadi();
+                    olimp.Название = txtNazv.Text;
+                    olimp.Дата_проведения = Convert.ToDateTime(dateProv.Text);
+                    olimp.Количество_заданий = Convert.ToInt32(txtKolvo.Text);
+                    db.GetTable<Olimpiadi>().InsertOnSubmit(olimp);
+                    db.SubmitChanges();
+                    Update();
 
-                MessageBox.Show("Добавлены новые данные");
+                    MessageBox.Show("Добавлены новые данные");
+                    txtNazv.IsEnabled = false;
+                    dateProv.IsEnabled = false;
+                    txtKolvo.IsEnabled = false;
+                    txtKolvo.Clear();
+                    txtNazv.Clear();
+                    dateProv.Text = "";
+                    btnCanselOlimp.IsEnabled = false;
+                    btnOKOlimpNew.IsEnabled = false;
+                    btnOKOlimpRed.IsEnabled = false;
+                }
+                else MessageBox.Show("Заполните все поля");
+            }
+            catch { MessageBox.Show("Ошибка соединения"); }            
+        }
+
+        private void BtnOKOlimpRed_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (txtNazv.Text.Length > 0 && dateProv.Text.Length > 0 && txtKolvo.Text.Length>0)
+                {
+                    object item = bdOlimpiadi.SelectedItem;
+                    long vb = Convert.ToInt64((bdOlimpiadi.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    OlimpiadyDataContext db = new OlimpiadyDataContext();
+                    Olimpiadi olimp = db.Olimpiadi.FirstOrDefault(uchid => uchid.ID_олимпиады.Equals(vb));
+                    olimp.Название = txtNazv.Text;
+                    olimp.Дата_проведения = Convert.ToDateTime(dateProv.Text);
+                    olimp.Количество_заданий = Convert.ToInt32(txtKolvo.Text);
+                    var SelectQuery =
+                        from a in db.GetTable<Olimpiadi>()
+                        select a;
+                    db.SubmitChanges();
+                    bdOlimpiadi.ItemsSource = SelectQuery;
+                    MessageBox.Show("Данные изменены");
+                    txtNazv.IsEnabled = false;
+                    txtKolvo.IsEnabled = false;
+                    dateProv.IsEnabled = false;
+                    txtNazv.Clear();
+                    txtKolvo.Clear();
+                    dateProv.Text = "";
+                    btnCanselOlimp.IsEnabled = false;
+                    btnOKOlimpNew.IsEnabled = false;
+                    btnOKOlimpRed.IsEnabled = false;
+                }
+                else MessageBox.Show("Заполните все поля");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
-
-            txtNazv.IsEnabled = false;
-            txtNum.IsEnabled = false;
-            dateProv.IsEnabled = false;
-            txtNazv.Clear();
-            txtNum.Clear();
-            dateProv.Text = "";
-            btnCanselSor.IsEnabled = false;
-            btnOKSorNew.IsEnabled = false;
-            btnOKSorRed.IsEnabled = false;
         }
 
-        private void BtnOKSorRed_Click(object sender, RoutedEventArgs e)
+        private void BtnDelOlimp_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                object item = bdSorevnovanya.SelectedItem;
-                long vb = Convert.ToInt64((bdSorevnovanya.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                SorevnovaniyaDataContext db = new SorevnovaniyaDataContext();
-                Sorevnovaniya sor = db.Sorevnovaniya.FirstOrDefault(uchid => uchid.ID_соревнования.Equals(vb));
-                sor.Название = txtNazv.Text;
-                sor.Максимальное_количество_участников = Convert.ToInt32(txtNum.Text);
-                sor.Дата_проведения = Convert.ToDateTime(dateProv.Text);
-                var SelectQuery =
-                    from a in db.GetTable<Sorevnovaniya>()
-                    select a;
-                db.SubmitChanges();
-                bdSorevnovanya.ItemsSource = SelectQuery;
-                MessageBox.Show("Данные изменены");
-            }
-            catch { MessageBox.Show("Ошибка соединения"); }
-
-            txtNazv.IsEnabled = false;
-            txtNum.IsEnabled = false;
-            dateProv.IsEnabled = false;
-            txtNazv.Clear();
-            txtNum.Clear();
-            dateProv.Text = "";
-            btnCanselSor.IsEnabled = false;
-            btnOKSorNew.IsEnabled = false;
-            btnOKSorRed.IsEnabled = false;
+                if (bdOlimpiadi.SelectedItem != null)
+                {
+                    OlimpiadyDataContext db = new OlimpiadyDataContext();
+                    object item = bdOlimpiadi.SelectedItem;
+                    long vb = Convert.ToInt64((bdOlimpiadi.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    var uch = (from s in db.Olimpiadi where s.ID_олимпиады == vb select s).Single<Olimpiadi>();
+                    try
+                    {
+                    db.Olimpiadi.DeleteOnSubmit(uch);
+                    db.SubmitChanges();
+                    Update();
+                    MessageBox.Show("Данные удалены");
+                    }
+                    catch { MessageBox.Show("Вы не можете удалить эту олимпиаду, т.к. на неё уже зарегистрированно участие"); }
+                }
+                else MessageBox.Show("Запись не выбрана");
         }
-
-        private void BtnDelSor_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                SorevnovaniyaDataContext db = new SorevnovaniyaDataContext();
-                object item = bdSorevnovanya.SelectedItem;
-                long vb = Convert.ToInt64((bdSorevnovanya.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                var uch = (from s in db.Sorevnovaniya where s.ID_соревнования == vb select s).Single<Sorevnovaniya>();
-                db.Sorevnovaniya.DeleteOnSubmit(uch);
-                db.SubmitChanges();
-                Update();
-
-                MessageBox.Show("Данные удалены");
-            }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
@@ -390,7 +430,7 @@ namespace КП
                         var infoUch = from a in uchastnikies
                                       join b in uchasties on a.ID_участника equals b.Участник
                                       where b.ID_участия == ID
-                                      select new { a.ID_участника, a.ФИО, a.Дата_рождения, a.Телефон };
+                                      select new { a.ID_участника, a.ФИО, a.Учебное_заведение, a.Дата_рождения, a.Телефон };
                         bdInf.ItemsSource = infoUch;
                     }
                 }
@@ -398,28 +438,11 @@ namespace КП
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
-
-        private void BtnDelUchast_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                UchastiyaDataContext db = new UchastiyaDataContext();
-                object item = bdUchastiya.SelectedItem;
-                long vb = Convert.ToInt64((bdUchastiya.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
-                var uch = (from s in db.Uchastie where s.ID_участия == vb select s).Single<Uchastie>();
-                db.Uchastie.DeleteOnSubmit(uch);
-                db.SubmitChanges();
-                Update();
-
-                MessageBox.Show("Данные удалены");
-            }
-            catch { MessageBox.Show("Ошибка соединения"); }
-        }
-
+        
         private void BtnNewUchastie_Click(object sender, RoutedEventArgs e)
         {
             cmbFIO.IsEnabled = true;
-            cmbSorev.IsEnabled = true;
+            cmbOlimp.IsEnabled = true;
             txtBall.IsEnabled = true;
             btnOKUchastNew.IsEnabled = true;
             btnCanselUchast.IsEnabled = true;
@@ -428,121 +451,169 @@ namespace КП
         private void BtnCanselUchast_Click(object sender, RoutedEventArgs e)
         {
             cmbFIO.SelectedValue="";
-            cmbSorev.SelectedValue = "";
-            cmbSorev.IsEnabled = false;
+            cmbOlimp.SelectedValue = "";
+            cmbOlimp.IsEnabled = false;
             cmbFIO.IsEnabled = false;
             txtBall.Clear();
             txtBall.IsEnabled = false;
+            btnOKUchastNew.IsEnabled = false;
+            btnCanselUchast.IsEnabled = false;
         }
 
+        //Код сохранения нового участия
         private void BtnOKUchastNew_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-                string newUch = Convert.ToString(cmbFIO.SelectedItem);
-                UchastnikiDataContext dc = new UchastnikiDataContext();
-                var uch = (from a in dc.Uchastniky
-                           where a.ФИО == newUch
-                           select a).ToArray();
-                string newSor = Convert.ToString(cmbSorev.SelectedItem);
-                SorevnovaniyaDataContext dc1 = new SorevnovaniyaDataContext();
-                var sor = (from a in dc1.Sorevnovaniya
-                           where a.Название == newSor
-                           select a).ToArray();
-                UchastiyaDataContext dc2 = new UchastiyaDataContext();
-                Uchastie uchastie = new Uchastie();
-                uchastie.Участник = uch[0].ID_участника;
-                uchastie.Соревнование = sor[0].ID_соревнования;
-                uchastie.Баллы=Convert.ToInt32(txtBall.Text);
-                dc2.GetTable<Uchastie>().InsertOnSubmit(uchastie);
-                dc2.SubmitChanges();
-                Update();
+            try
+            {
+                if (cmbFIO.Text.Length>0 && cmbOlimp.Text.Length>0 && txtBall.Text.Length>0)
+                {
+                    string newUch = Convert.ToString(cmbFIO.SelectedItem);
+                    UchastnikiDataContext dc = new UchastnikiDataContext();
+                    var uch = (from a in dc.Uchastniky
+                               where a.ФИО == newUch
+                               select a).ToArray();
+                    string newOl = Convert.ToString(cmbOlimp.SelectedItem);
+                    OlimpiadyDataContext dc1 = new OlimpiadyDataContext();
+                    var sor = (from a in dc1.Olimpiadi
+                               where a.Название == newOl
+                               select a).ToArray();
+                    UchastiyaDataContext dc2 = new UchastiyaDataContext();
+                    Uchastie uchastie = new Uchastie();
+                    uchastie.Участник = uch[0].ID_участника;
+                    uchastie.Олимпиада = sor[0].ID_олимпиады;
+                    uchastie.Баллы = Convert.ToInt32(txtBall.Text);
+                    dc2.GetTable<Uchastie>().InsertOnSubmit(uchastie);
+                    dc2.SubmitChanges();
+                    Update();
 
-                MessageBox.Show("Добавлены новые данные");
-            //}
-            //catch { MessageBox.Show("Ошибка соединения"); }
+                    MessageBox.Show("Добавлены новые данные");
 
-            txtNazv.IsEnabled = false;
-            txtNum.IsEnabled = false;
-            dateProv.IsEnabled = false;
-            txtNazv.Clear();
-            txtNum.Clear();
-            dateProv.Text = "";
-            btnCanselSor.IsEnabled = false;
-            btnOKSorNew.IsEnabled = false;
-            btnOKSorRed.IsEnabled = false;
+                    cmbFIO.SelectedValue = "";
+                    cmbOlimp.SelectedValue = "";
+                    cmbOlimp.IsEnabled = false;
+                    cmbFIO.IsEnabled = false;
+                    txtBall.Clear();
+                    txtBall.IsEnabled = false;
+                    btnOKUchastNew.IsEnabled = false;
+                    btnCanselUchast.IsEnabled = false;
+                }
+                else MessageBox.Show("Заполните все поля");
+            }
+            catch { MessageBox.Show("Ошибка соединения"); }
+        }
+
+        private void BtnDelUchast_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (bdUchastiya.SelectedItem != null)
+                {
+                    UchastiyaDataContext db = new UchastiyaDataContext();
+                    object item = bdUchastiya.SelectedItem;
+                    long vb = Convert.ToInt64((bdUchastiya.SelectedCells[0].Column.GetCellContent(item) as TextBlock).Text);
+                    var uch = (from s in db.Uchastie where s.ID_участия == vb select s).Single<Uchastie>();
+                    db.Uchastie.DeleteOnSubmit(uch);
+                    db.SubmitChanges();
+                    Update();
+
+                    MessageBox.Show("Данные удалены");
+                }
+                else MessageBox.Show("Запись не выбрана");
+            }
+            catch { MessageBox.Show("Ошибка соединения"); }
         }
 
 
-      
 
-        //Вкладка Запросы
+        //Вкладка Отчёты
+        //Поиск участий по дате проведения соревнований
         private void BtnOk1Zapr_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
-                {
-                    Table<Uchastie> uchasties = db.GetTable<Uchastie>();
-                    Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
-                    Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
-                    var query = from a in uchasties
-                                join b in uchastnikies on a.Участник equals b.ID_участника
-                                join c in sorevnovaniyas on a.Соревнование equals c.ID_соревнования
-                                where c.Дата_проведения == Convert.ToDateTime(DateZapr.Text)
-                                select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения };
-                    dbZapros.ItemsSource = query;
-                }
+                if (DateZapr.Text.Length > 0)
+                    using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                    {
+                        Table<Uchastie> uchasties = db.GetTable<Uchastie>();
+                        Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
+                        Table<Olimpiadi> olimpiadis = db.GetTable<Olimpiadi>();
+                        var query = from a in uchasties
+                                    join b in uchastnikies on a.Участник equals b.ID_участника
+                                    join c in olimpiadis on a.Олимпиада equals c.ID_олимпиады
+                                    where c.Дата_проведения == Convert.ToDateTime(DateZapr.Text)
+                                    select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения, a.Баллы };
+                        dbZapros.ItemsSource = query;
+                    }
+                else MessageBox.Show("Выберите дату");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
+        //Поиск участий но названию соревнования
         private void BtnOk2Zapr_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                if (cmbZapOlimp.Text.Length > 0)
                 {
-                    SorevnovaniyaDataContext dc = new SorevnovaniyaDataContext();
-                    var sor = (from a in dc.Sorevnovaniya
-                               where a.Название == Convert.ToString(cmbZapSor.SelectedItem)
-                               select a).ToArray();
-                    Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
-                    Table<Uchastie> uchasties = db.GetTable<Uchastie>();
-                    Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
-                    var query = from a in uchasties
-                                join b in uchastnikies on a.Участник equals b.ID_участника
-                                join c in sorevnovaniyas on a.Соревнование equals c.ID_соревнования
-                                where a.Соревнование == sor[0].ID_соревнования
-                                select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения };
-                    dbZapros.ItemsSource = query;
+                    using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                    {
+                        OlimpiadyDataContext dc = new OlimpiadyDataContext();
+                        var ol = (from a in dc.Olimpiadi
+                                   where a.Название == Convert.ToString(cmbZapOlimp.SelectedItem)
+                                   select a).ToArray();
+                        Table<Olimpiadi> olimpiadis = db.GetTable<Olimpiadi>();
+                        Table<Uchastie> uchasties = db.GetTable<Uchastie>();
+                        Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
+                        var query = from a in uchasties
+                                    join b in uchastnikies on a.Участник equals b.ID_участника
+                                    join c in olimpiadis on a.Олимпиада equals c.ID_олимпиады
+                                    where a.Олимпиада == ol[0].ID_олимпиады
+                                    select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения, a.Баллы };
+                        dbZapros.ItemsSource = query;
+                    }
                 }
+                else MessageBox.Show("Выберите соревнование");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
         }
 
+        //Поиск участий по ФИО участника
         private void BtnOk3Zapr_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                if (cmbZapUch.Text.Length > 0)
                 {
-                    UchastnikiDataContext dc1 = new UchastnikiDataContext();
-                    var uch = (from a in dc1.Uchastniky
-                               where a.ФИО == Convert.ToString(cmbZapUch.SelectedItem)
-                               select a).ToArray();
-                    Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
-                    Table<Sorevnovaniya> sorevnovaniyas = db.GetTable<Sorevnovaniya>();
-                    Table<Uchastie> uchasties = db.GetTable<Uchastie>();
-                    var query = from a in uchasties
-                                join b in uchastnikies on a.Участник equals b.ID_участника
-                                join c in sorevnovaniyas on a.Соревнование equals c.ID_соревнования
-                                where a.Участник == uch[0].ID_участника
-                                select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения };
-                    dbZapros.ItemsSource = query;
+                    using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                    {
+                        UchastnikiDataContext dc1 = new UchastnikiDataContext();
+                        var uch = (from a in dc1.Uchastniky
+                                   where a.ФИО == Convert.ToString(cmbZapUch.SelectedItem)
+                                   select a).ToArray();
+                        Table<Uchastniky> uchastnikies = db.GetTable<Uchastniky>();
+                        Table<Olimpiadi> olimpiadis = db.GetTable<Olimpiadi>();
+                        Table<Uchastie> uchasties = db.GetTable<Uchastie>();
+                        var query = from a in uchasties
+                                    join b in uchastnikies on a.Участник equals b.ID_участника
+                                    join c in olimpiadis on a.Олимпиада equals c.ID_олимпиады
+                                    where a.Участник == uch[0].ID_участника
+                                    select new { a.ID_участия, b.ФИО, c.Название, c.Дата_проведения, a.Баллы };
+                        dbZapros.ItemsSource = query;
+                    }
                 }
+                else MessageBox.Show("Выберите участника");
             }
             catch { MessageBox.Show("Ошибка соединения"); }
+        }
+        
+        //Код кнопки "Очистить"
+        private void BtnClearZap_Click(object sender, RoutedEventArgs e)
+        {
+            DateZapr.Text = "";
+            cmbZapUch.SelectedValue = "";
+            cmbZapOlimp.SelectedValue = "";
+            dbZapros.ItemsSource = null;
         }
 
         private void BtnOtchet_Click(object sender, RoutedEventArgs e)
@@ -554,16 +625,14 @@ namespace КП
             Worksheet ws = wb.Worksheets[1];
             DateTime curretDate = DateTime.Now;
             ws.Columns.AutoFit();
-            ws.Range["A1"].Value = "Отчёт об информации участий";
+            ws.Range["A1"].Value = "Отчёт Информация об участиях";
             for (int i = 0; i < dbZapros.Columns.Count; i++)
-            {
                 for (int j = 0; j < dbZapros.Items.Count; j++)
                 {
                     TextBlock text = dbZapros.Columns[i].GetCellContent(dbZapros.Items[j]) as TextBlock;
                     Range range = (Range)ws.Cells[j + 3, i + 1];
                     range.Value2 = text.Text;
                 }
-            }
 
             for (int i = 0; i < dbZapros.Columns.Count; i++)
             {
@@ -571,34 +640,28 @@ namespace КП
                 ws.Cells[2, i + 1].font.bold = true;
                 ws.Cells[2, i + 1].columnwidth = 15;
                 range.Value2 = dbZapros.Columns[i].Header;
-                
             }
         }
 
 
-        
-        private void TxtNum_PreviewTextInput(object sender, TextCompositionEventArgs e)
+
+        //Валидация
+        private void ValNum_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
         }
 
-        private void TxtPhone_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
-        }
-
-        private void TxtFIO_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void ValFIO_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             if ((e.Text[0] < 'А' || e.Text[0] > 'Я' && e.Text[0] < 'а' || e.Text[0] > 'я') && e.Text[0] != '-' && e.Text[0] != '.')
                 e.Handled = true;
         }
 
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Val3_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            txtPoisk.Clear();
-            BtnCanselSor_Click(null, null);
-            BtnCanselUchast_Click(null, null);
-            BtnCanselUch_Click(null, null);
+            if ((e.Text[0] < 'А' || e.Text[0] > 'Я' && e.Text[0] < 'а' || e.Text[0] > 'я') && e.Text[0] != '-' && e.Text[0] != '.' && !Char.IsDigit(e.Text, 0))
+                e.Handled = true;
         }
+        
     }
 }

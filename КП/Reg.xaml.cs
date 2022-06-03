@@ -28,58 +28,48 @@ namespace КП
 
         private void BtnRegReg_Click(object sender, RoutedEventArgs e)
         {
-            string s = "Пароль должен содержать ";
-                //проверка пароля
+            if (txtFIOReg.Text.Length > 0 && txtLoginReg.Text.Length > 0 && txtPasswordReg.Text.Length > 0)
+            {
+                string s = "Пароль должен содержать ";
                 bool A, B, C, D;
                 if (txtPasswordReg.Text.Length < 6) { s = s + "Минимум 6 символов,"; A = false; }
                 else A = true;
-
-                // проверка на Верхний регистр
                 if (Regex.IsMatch(txtPasswordReg.Text, @"[A-Z]") || Regex.IsMatch(txtPasswordReg.Text, @"[А-Я]")) B = true;
-                { s = s + "Минимум 1 прописную букву, "; B = false; }
-
-                // проверка на число
+                else { s = s + "Минимум 1 прописную букву, "; B = false; }
                 if (Regex.IsMatch(txtPasswordReg.Text, @"[0-9]")) C = true;
                 else { s = s + "Минимум 1 цифру, "; C = false; }
-
-                // проверка на знак
                 if (Regex.IsMatch(txtPasswordReg.Text, @"[!@#$%^]")) D = true;
                 else { s = s + "Минимум 1 один символ из набора:  ! @ # $ % ^"; D = false; }
-
-            try
-            {
-                if (A && B && C && D)
+                try
                 {
-                    using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                    if (A && B && C && D)
                     {
-                        UsersDataContext dv = new UsersDataContext();
-                        string log = txtLoginReg.Text;
-                        string pas = txtPasswordReg.Text;
-                        string fio = txtFIOReg.Text;
-                        User user = new User();
-                        user.Логин = log;
-                        user.Пароль = pas;
-                        user.ФИО = fio;
-                        db.GetTable<User>().InsertOnSubmit(user);
-                        db.SubmitChanges();
-                        MessageBox.Show("Пользователь добавлен");
+                        using (DataContext db = new DataContext(Properties.Settings.Default.DbConnect))
+                        {
+                            UsersDataContext dv = new UsersDataContext();
+                            string log = txtLoginReg.Text;
+                            string pas = txtPasswordReg.Text;
+                            string fio = txtFIOReg.Text;
+                            User user = new User();
+                            user.Логин = log;
+                            user.Пароль = pas;
+                            user.ФИО = fio;
+                            db.GetTable<User>().InsertOnSubmit(user);
+                            db.SubmitChanges();
+                            MessageBox.Show("Пользователь добавлен");
+                        }
+                        MainWindow main = new MainWindow();
+                        main.Show();
+                        this.Close();
                     }
-                    MainWindow main = new MainWindow();
-                    main.Show();
-                    this.Close();
-
+                    else MessageBox.Show(s);
                 }
-                else
+                catch
                 {
-                    MessageBox.Show(s);
+                    MessageBox.Show("Ошибка соединения");
                 }
             }
-
-            catch
-            {
-                MessageBox.Show("Ошибка соединения");
-            }
-            
+            else MessageBox.Show("Заполните все поля");            
         }
 
         private void BtnRegOtm_Click(object sender, RoutedEventArgs e)
@@ -87,6 +77,12 @@ namespace КП
             MainWindow main = new MainWindow();
             main.Show();
             this.Close();
+        }
+
+        private void txtFIOReg_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if ((e.Text[0] < 'А' || e.Text[0] > 'Я' && e.Text[0] < 'а' || e.Text[0] > 'я') && e.Text[0] != '-' && e.Text[0] != '.')
+                e.Handled = true;
         }
     }
 }

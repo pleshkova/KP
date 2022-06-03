@@ -74,6 +74,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style TargetType="PasswordBox">
             <Setter Property="BorderBrush" Value="#FF1B0DA6"/>
             <Setter Property="BorderThickness" Value="2"/>

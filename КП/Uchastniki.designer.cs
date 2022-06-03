@@ -88,9 +88,7 @@ namespace КП
 		
 		private string _Телефон;
 		
-		private string _Адрес;
-		
-		private string _Руководитель;
+		private string _Учебное_заведение;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -104,10 +102,8 @@ namespace КП
     partial void OnДата_рожденияChanged();
     partial void OnТелефонChanging(string value);
     partial void OnТелефонChanged();
-    partial void OnАдресChanging(string value);
-    partial void OnАдресChanged();
-    partial void OnРуководительChanging(string value);
-    partial void OnРуководительChanged();
+    partial void OnУчебное_заведениеChanging(string value);
+    partial void OnУчебное_заведениеChanged();
     #endregion
 		
 		public Uchastniky()
@@ -155,7 +151,7 @@ namespace КП
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[Дата рождения]", Storage="_Дата_рождения", DbType="Date", IsDbGenerated=true)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[Дата рождения]", Storage="_Дата_рождения", DbType="Date")]
 		public System.Nullable<System.DateTime> Дата_рождения
 		{
 			get
@@ -195,42 +191,22 @@ namespace КП
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Адрес", DbType="VarChar(50)")]
-		public string Адрес
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[Учебное заведение]", Storage="_Учебное_заведение", DbType="VarChar(50)")]
+		public string Учебное_заведение
 		{
 			get
 			{
-				return this._Адрес;
+				return this._Учебное_заведение;
 			}
 			set
 			{
-				if ((this._Адрес != value))
+				if ((this._Учебное_заведение != value))
 				{
-					this.OnАдресChanging(value);
+					this.OnУчебное_заведениеChanging(value);
 					this.SendPropertyChanging();
-					this._Адрес = value;
-					this.SendPropertyChanged("Адрес");
-					this.OnАдресChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Руководитель", DbType="VarChar(50)")]
-		public string Руководитель
-		{
-			get
-			{
-				return this._Руководитель;
-			}
-			set
-			{
-				if ((this._Руководитель != value))
-				{
-					this.OnРуководительChanging(value);
-					this.SendPropertyChanging();
-					this._Руководитель = value;
-					this.SendPropertyChanged("Руководитель");
-					this.OnРуководительChanged();
+					this._Учебное_заведение = value;
+					this.SendPropertyChanged("Учебное_заведение");
+					this.OnУчебное_заведениеChanged();
 				}
 			}
 		}

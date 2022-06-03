@@ -4,10 +4,9 @@
     <Type Name="Uchastniky">
       <Column Name="[ID участника]" Member="ID_участника" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="ФИО" Type="System.String" DbType="VarChar(70)" CanBeNull="true" />
-      <Column Name="[Дата рождения]" Member="Дата_рождения" AutoSync="Never" Type="System.DateTime" DbType="Date" IsDbGenerated="true" CanBeNull="true" />
+      <Column Name="[Дата рождения]" Member="Дата_рождения" Type="System.DateTime" DbType="Date" CanBeNull="true" />
       <Column Name="Телефон" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Адрес" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Руководитель" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="[Учебное заведение]" Member="Учебное_заведение" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
 </Database>

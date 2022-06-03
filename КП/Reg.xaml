@@ -92,7 +92,7 @@
 
         <StackPanel Grid.Row="1">
             <TextBlock Text="ФИО"/>
-            <TextBox x:Name="txtFIOReg"/>
+            <TextBox x:Name="txtFIOReg" PreviewTextInput="txtFIOReg_PreviewTextInput"/>
         </StackPanel>
         
         <StackPanel Grid.Row="2">

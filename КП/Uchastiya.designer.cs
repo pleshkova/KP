@@ -84,11 +84,9 @@ namespace КП
 		
 		private System.Nullable<int> _Участник;
 		
-		private System.Nullable<int> _Соревнование;
+		private System.Nullable<int> _Олимпиада;
 		
-		private System.Nullable<float> _Баллы;
-		
-		private System.Nullable<int> _Место;
+		private System.Nullable<int> _Баллы;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -98,12 +96,10 @@ namespace КП
     partial void OnID_участияChanged();
     partial void OnУчастникChanging(System.Nullable<int> value);
     partial void OnУчастникChanged();
-    partial void OnСоревнованиеChanging(System.Nullable<int> value);
-    partial void OnСоревнованиеChanged();
-    partial void OnБаллыChanging(System.Nullable<float> value);
+    partial void OnОлимпиадаChanging(System.Nullable<int> value);
+    partial void OnОлимпиадаChanged();
+    partial void OnБаллыChanging(System.Nullable<int> value);
     partial void OnБаллыChanged();
-    partial void OnМестоChanging(System.Nullable<int> value);
-    partial void OnМестоChanged();
     #endregion
 		
 		public Uchastie()
@@ -151,28 +147,28 @@ namespace КП
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Соревнование", DbType="Int")]
-		public System.Nullable<int> Соревнование
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Олимпиада", DbType="Int")]
+		public System.Nullable<int> Олимпиада
 		{
 			get
 			{
-				return this._Соревнование;
+				return this._Олимпиада;
 			}
 			set
 			{
-				if ((this._Соревнование != value))
+				if ((this._Олимпиада != value))
 				{
-					this.OnСоревнованиеChanging(value);
+					this.OnОлимпиадаChanging(value);
 					this.SendPropertyChanging();
-					this._Соревнование = value;
-					this.SendPropertyChanged("Соревнование");
-					this.OnСоревнованиеChanged();
+					this._Олимпиада = value;
+					this.SendPropertyChanged("Олимпиада");
+					this.OnОлимпиадаChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Баллы", DbType="Real")]
-		public System.Nullable<float> Баллы
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Баллы", DbType="Int")]
+		public System.Nullable<int> Баллы
 		{
 			get
 			{
@@ -187,26 +183,6 @@ namespace КП
 					this._Баллы = value;
 					this.SendPropertyChanged("Баллы");
 					this.OnБаллыChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Место", DbType="Int")]
-		public System.Nullable<int> Место
-		{
-			get
-			{
-				return this._Место;
-			}
-			set
-			{
-				if ((this._Место != value))
-				{
-					this.OnМестоChanging(value);
-					this.SendPropertyChanging();
-					this._Место = value;
-					this.SendPropertyChanged("Место");
-					this.OnМестоChanged();
 				}
 			}
 		}

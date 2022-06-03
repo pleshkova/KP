@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="Olimpiady">
+  <DataContextMoniker Name="/OlimpiadyDataContext" />
+  <nestedChildShapes>
+    <classShape Id="405745b9-359a-4896-b791-d94859a67630" absoluteBounds="3.25, 4.875, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/OlimpiadyDataContext/Olimpiadi" />
+      <nestedChildShapes>
+        <elementListCompartment Id="13299505-efc4-4a3f-bc38-77471b013f28" absoluteBounds="3.265, 5.335, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>
